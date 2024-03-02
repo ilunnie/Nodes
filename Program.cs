@@ -36,3 +36,8 @@ root = new TreeNode<int>(100)
     .AddChild(tree1.Root)
     .AddChild(tree2.Root)
     .AddChild(tree3.Root);
+
+var tree5 = new Tree<int>(root);
+
+
+System.Console.WriteLine(tree5);

@@ -1,36 +1,66 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace ilunnie.Collections;
 
 public class TreeNode<T> : INode<T>
 {
     public T Value { get; set; }
-    public TreeNode<T> Parent { get; set; }
-    public List<TreeNode<T>> Children { get; set; }
+    public TreeNode<T> Parent { get; set; } // if null then is root
+    public IEnumerable<TreeNode<T>> Children { get; set; }
 
     public TreeNode(
         T value,
         TreeNode<T> parent = null,
-        List<TreeNode<T>> children = null
+        IEnumerable<TreeNode<T>> children = null
     )
     {
         this.Value = value;
         this.Parent = parent;
-        this.Children = children;
+        this.Children = children ?? Enumerable.Empty<TreeNode<T>>();
     }
 
     public TreeNode<T> AddChild(TreeNode<T> child)
     {
         child.Parent = this;
-        Children.Add(child);
+        this.Children = this.Children.Append(child);
+
         return this;
     }
 
     public TreeNode<T> RemoveChild(TreeNode<T> child)
     {
         child.Parent = null;
-        Children.Remove(child);
+        this.Children = this.Children.Where(x => x != child);
 
         return this;
+    }
+
+    public override string ToString()
+        => ToString("", true, true);
+
+    public string ToString(string indent, bool isLast, bool isRoot)
+    {
+        var result = new StringBuilder(indent);
+
+        if(!isLast)
+        {
+            result.Append(Parent?.Children.LastOrDefault() == this
+                            ? "\u2514\u2500\u2500\u2500"
+                            : "\u251c\u2500\u2500\u2500");
+            indent += "\u2502   ";
+        } else if (!isRoot)
+        {
+            result.Append("\u2514\u2500\u2500\u2500");
+            indent += "    ";
+        }
+
+        result.AppendLine(Value?.ToString());
+
+        for (int i = 0; i < this.Children.Count(); i++)
+            result.Append(this.Children.ElementAt(i).ToString(indent, i == Children.Count() - 1, false));
+
+        return result.ToString();
     }
 }
