@@ -43,7 +43,3 @@ var tree5 = new Tree<int>(root);
 var time = DateTime.Now;
 System.Console.WriteLine(tree5);
 Console.WriteLine((DateTime.Now - time).TotalMilliseconds);
-
-// Console.WriteLine("\u251c\u2500\u2500\u2500");
-// Console.WriteLine("\u2514\u2500\u2500\u2500");
-Console.WriteLine("\u2502   ");

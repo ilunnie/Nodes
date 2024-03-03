@@ -20,7 +20,10 @@ public class TreeNode<T> : INode<T>
     {
         this.Value = value;
         this.Parent = parent;
-        this.Children = children ?? Enumerable.Empty<TreeNode<T>>();
+
+        this.Children = children is null
+                            ? Enumerable.Empty<TreeNode<T>>()
+                            : children.Select(child => { child.Parent = this; return child; });
     }
 
     public TreeNode<T> AddChild(TreeNode<T> child)
@@ -73,7 +76,7 @@ public class TreeNode<T> : INode<T>
         builder.AppendLine(Value?.ToString());
         for (int i = 0; i < this.Children.Count(); i++)
             this.Children.ElementAt(i).ToString(builder, indent);
-        
+
         return builder;
     }
 }
