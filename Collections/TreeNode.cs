@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,8 @@ namespace ilunnie.Collections;
 public class TreeNode<T> : INode<T>
 {
     public T Value { get; set; }
-    public TreeNode<T> Parent { get; set; } // if null then is root
+    /// <summary> If null then is root </summary>
+    public TreeNode<T> Parent { get; set; }
     public IEnumerable<TreeNode<T>> Children { get; set; }
 
     public TreeNode(
@@ -38,29 +40,40 @@ public class TreeNode<T> : INode<T>
     }
 
     public override string ToString()
-        => ToString("", true, true);
-
-    public string ToString(string indent, bool isLast, bool isRoot)
     {
-        var result = new StringBuilder(indent);
+        StringBuilder builder = new StringBuilder();
+        ToString(builder, isRoot: true);
+        return builder.ToString();
+    }
 
-        if(!isLast)
-        {
-            result.Append(Parent?.Children.LastOrDefault() == this
-                            ? "\u2514\u2500\u2500\u2500"
-                            : "\u251c\u2500\u2500\u2500");
-            indent += "\u2502   ";
-        } else if (!isRoot)
-        {
-            result.Append("\u2514\u2500\u2500\u2500");
-            indent += "    ";
-        }
+    /// <summary>
+    /// Add current node in builder
+    /// </summary>
+    /// <param name="builder">StringBuilder with nodes</param>
+    /// <param name="indent">Characters preceding the current node</param>
+    /// <param name="isRoot">If it is the root, there will be no indentation</param>
+    /// <returns></returns>
+    protected StringBuilder ToString(StringBuilder builder, string indent = "", bool isRoot = false)
+    {
+        builder.Append(indent);
 
-        result.AppendLine(Value?.ToString());
+        bool isLast = Parent is null || Parent?.Children.LastOrDefault() == this;
+        if (!isRoot)
+            if (isLast)
+            {
+                builder.Append("\u2514\u2500\u2500\u2500"); // is "└───"
+                indent += "    ";
+            }
+            else
+            {
+                builder.Append("\u251c\u2500\u2500\u2500"); // is "├───"
+                indent += "\u2502   "; // is "│   "
+            }
 
+        builder.AppendLine(Value?.ToString());
         for (int i = 0; i < this.Children.Count(); i++)
-            result.Append(this.Children.ElementAt(i).ToString(indent, i == Children.Count() - 1, false));
-
-        return result.ToString();
+            this.Children.ElementAt(i).ToString(builder, indent);
+        
+        return builder;
     }
 }
