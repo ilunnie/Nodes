@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ilunnie.Collections;
+using ilunnie.Search;
 
 // Tree 1 (root = 50)
 var node = new TreeNode<int>(6);
@@ -41,5 +42,6 @@ root = new TreeNode<int>(100)
 var tree5 = new Tree<int>(root);
 
 var time = DateTime.Now;
-System.Console.WriteLine(tree5);
+Console.WriteLine(tree5);
+Console.WriteLine(tree5.BFSearch<int>(96));
 Console.WriteLine((DateTime.Now - time).TotalMilliseconds);
