@@ -6,26 +6,30 @@ namespace ilunnie.Search;
 
 public static partial class Search
 {
-    public static bool BFSearch<T>(this TreeNode<T> node, T goal)
+    public static bool BFSearch<T, TNode>(SearchNode<T, TNode> node, T goal) where TNode : INode<T>
     {
-        if (EqualityComparer<T>.Default.Equals(node.Value, goal))
-            return true;
+        var queue = new Queue<SearchNode<T, TNode>>();
+        queue.Enqueue(node);
 
-        Queue<TreeNode<T>> queue = new();
-        queue.Append(node);
         while (queue.Count > 0)
         {
-            var treeNode = queue.Dequeue();
-            if (EqualityComparer<T>.Default.Equals(treeNode.Value, goal))
-                    return true;
+            var currNode = queue.Dequeue();
 
-            foreach (var child in treeNode.Children)
-                queue.Append(child);
+            if (currNode.Visited)
+                continue;
+
+            currNode.Visited = true;
+
+            if (EqualityComparer<T>.Default.Equals(currNode.Node.Value, goal))
+            {
+                currNode.IsSolution = true;
+                return true;
+            }
+
+            foreach (var child in currNode.Neighbours())
+                queue.Enqueue(child);
         }
 
         return false;
     }
-
-    public static bool BFSearch<T>(this Tree<T> tree, T goal)
-        => DFSearch(tree.Root, goal);
 }

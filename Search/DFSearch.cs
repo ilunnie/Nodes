@@ -1,21 +1,24 @@
 using System.Collections.Generic;
+using System.Linq;
 using ilunnie.Collections;
 
 namespace ilunnie.Search;
 
 public static partial class Search
 {
-    public static bool DFSearch<T>(this TreeNode<T> node, T goal)
-    {        
-        if (EqualityComparer<T>.Default.Equals(node.Value, goal))
-            return true;
+    public static bool DFSearch<T, TNode>(this SearchNode<T, TNode> node, T goal) where TNode : INode<T>
+    {
+        if (node.Visited)
+            return false;
+        node.Visited = true;
 
-        foreach (var currNode in node.Children)
-            if (DFSearch(currNode, goal))
-                return true;
-                
-        return false;
+
+        if (EqualityComparer<T>.Default.Equals(node.Node.Value, goal))
+        {
+            node.IsSolution = true;
+            return true;
+        }
+
+        return node.Neighbours().Any(neighbour => !neighbour.Visited && DFSearch<T, TNode>(neighbour, goal));
     }
-    public static bool DFSearch<T>(this Tree<T> tree, T goal)
-        => DFSearch(tree.Root, goal);
 }
